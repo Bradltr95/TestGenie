@@ -1,8 +1,9 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
-group = 'com.bradltr'
+group = 'com.testgenie'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -10,10 +11,14 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'com.github.javaparser:javaparser-core:3.25.4'
+    implementation 'info.picocli:picocli:4.7.5'
 }
 
-test {
-    useJUnitPlatform()
+application {
+    mainClass = 'com.testgenie.App'
+}
+
+tasks.withType(JavaExec) {
+    standardInput = System.in
 }
