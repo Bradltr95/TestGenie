@@ -1,8 +1,9 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
-group = 'com.bradltr'
+group = 'com.testgenie'
 version = '1.0-SNAPSHOT'
 
 repositories {
@@ -14,6 +15,10 @@ dependencies {
     implementation 'info.picocli:picocli:4.7.5'
 }
 
-test {
-    useJUnitPlatform()
+application {
+    mainClass = 'com.testgenie.App'
+}
+
+tasks.withType(JavaExec) {
+    standardInput = System.in
 }
