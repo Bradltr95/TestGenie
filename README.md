@@ -1,6 +1,8 @@
 # TestGenie
 A simple CLI tool that scans your Java methods and generates intelligent JUnit 5 test stubs — **fully offline** and no setup needed.
 
+The Applications main point of entry is src/main/java/com/testgenie/App.java
+
 ## Features
 
 - Parses any Java class file in the /samples directory.
