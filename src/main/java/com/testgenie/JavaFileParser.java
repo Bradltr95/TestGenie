@@ -39,7 +39,7 @@ public class JavaFileParser {
 
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
-            System.err.println("Failed to parse file: " + e.getMessage());
+            System.err.println("Failed to parse file for methods: " + e.getMessage());
             return List.of();
         }
     }
@@ -60,7 +60,7 @@ public class JavaFileParser {
                     .toList();
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
-            System.err.println("Failed to parse file: " + e.getMessage());
+            System.err.println("Failed to parse file for class fields: " + e.getMessage());
             return List.of();
         }
     }
