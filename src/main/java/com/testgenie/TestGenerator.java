@@ -12,7 +12,16 @@ public class TestGenerator {
      * @param outputDir The output directory to write the test file to. This should be the output directory.
      */
     public void generateTestFile(File sourceFile, String outputDir) {
-
+        StringBuilder testContent = new StringBuilder();
+        testContent.append("package com.testgenie.generated;\n\n")
+                .append("import org.junit.jupiter.api.BeforeEach;\n")
+                .append("import org.junit.jupiter.api.Test;\n")
+                .append("import org.mockito.InjectMocks;\n")
+                .append("import org.mockito.Mock;\n")
+                .append("import org.mockito.MockitoAnnotations;\n")
+                .append("\n")
+                .append("import static org.mockito.Mockito.*;\n")
+                .append("import static org.junit.jupiter.api.Assertions.*;\n\n");
     }
 
     /**
