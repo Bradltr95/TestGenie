@@ -101,6 +101,61 @@ public class TestGenerator {
                     body.findAll(ReturnStmt.class).stream().anyMatch(r -> r.toString().contains("true") || r.toString().contains("false"));
             boolean changesState = body.findAll(AssignExpr.class).stream()
                     .anyMatch(a -> !a.getTarget().toString().contains("final"));
+
+            if (hasNullCheck) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_nullCheck() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify null handling\n")
+                        .append(INDENT).append(INDENT).append("assertThrows(NullPointerException.class, () -> {\n")
+                        .append(INDENT).append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(null);\n")
+                        .append(INDENT).append(INDENT).append("});\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (throwsException) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_throwsException() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify exception thrown\n")
+                        .append(INDENT).append(INDENT).append("assertThrows(Exception.class, () -> {\n")
+                        .append(INDENT).append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("});\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (hasConditional) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_conditionals() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify branching logic\n")
+                        .append(INDENT).append(INDENT).append("// Example: assertEquals(...)\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (usesOptional) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_returnsOptional() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: test Optional presence/absence\n")
+                        .append(INDENT).append(INDENT).append("Optional<?> result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("assertTrue(result.isPresent());\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (returnsBoolean) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_returnsBoolean() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: test true/false conditions\n")
+                        .append(INDENT).append(INDENT).append("boolean result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("assertTrue(result);\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (changesState) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_changesState() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify side effects or state changes\n")
+                        .append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("// assertEquals(expected, ...)\n")
+                        .append(INDENT).append("}\n\n");
+            }
         }
 
         testContent.append("}");
