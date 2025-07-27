@@ -2,6 +2,7 @@ package com.testgenie;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
@@ -60,6 +61,27 @@ public class JavaFileParser {
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
             System.err.println("Failed to parse file: " + e.getMessage());
+            return List.of();
+        }
+    }
+
+    /**
+     * Parses a given Java file and extracts the class or interface name.
+     * This method is used to capture the name of the file and prefixing it with Test during the TestGeneration.
+     *
+     * @param file The Java source file to parse.
+     * @return A list of ClassOrInterfaceDeclaration nodes found in the file.
+     *      Returns an empty list if parsing fails or no fields are found.
+     */
+    public static List<ClassOrInterfaceDeclaration> parseClassOrInterfaceName(File file) {
+        try {
+            CompilationUnit compUnit = StaticJavaParser.parse(file);
+
+            return compUnit.findAll(ClassOrInterfaceDeclaration.class)
+                    .stream()
+                    .toList();
+        } catch(Exception e) {
+            System.err.println("Failed to parse file for ClassOrInterfanceName: " + e.getMessage());
             return List.of();
         }
     }
