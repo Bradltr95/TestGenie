@@ -8,6 +8,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 
 import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * JavaFileParser is responsible for:
@@ -73,16 +74,17 @@ public class JavaFileParser {
      * @return A list of ClassOrInterfaceDeclaration nodes found in the file.
      *      Returns an empty list if parsing fails or no fields are found.
      */
-    public static List<ClassOrInterfaceDeclaration> parseClassOrInterfaceName(File file) {
+    public static Optional<String> parseClassOrInterfaceName(File file) {
         try {
             CompilationUnit compUnit = StaticJavaParser.parse(file);
 
             return compUnit.findAll(ClassOrInterfaceDeclaration.class)
                     .stream()
-                    .toList();
+                    .findFirst()
+                    .map(ClassOrInterfaceDeclaration::getNameAsString);
         } catch(Exception e) {
             System.err.println("Failed to parse file for ClassOrInterfanceName: " + e.getMessage());
-            return List.of();
+            return Optional.empty();
         }
     }
 }
