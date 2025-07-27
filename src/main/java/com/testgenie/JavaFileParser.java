@@ -2,6 +2,7 @@ package com.testgenie;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
 import java.io.File;
@@ -36,6 +37,27 @@ public class JavaFileParser {
                     .stream()
                     .collect(Collectors.toList());
 
+        } catch(Exception e) {
+            // If parsing fails, return an empty list instead of throwing and return an error message
+            System.err.println("Failed to parse file: " + e.getMessage());
+            return List.of();
+        }
+    }
+
+    /**
+     * Parses a given Java file and extracts all field declarations.
+     *
+     * @param file The Java source file to parse.
+     * @return A list of FieldDeclaration nodes found in the file.
+     *         Returns an empty list if parsing fails or no fields are found.
+     */
+    public static List<FieldDeclaration> parseFields(File file) {
+        try {
+            CompilationUnit compUnit = StaticJavaParser.parse(file);
+
+            return compUnit.findAll(FieldDeclaration.class)
+                    .stream()
+                    .collect(Collectors.toList());
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
             System.err.println("Failed to parse file: " + e.getMessage());
