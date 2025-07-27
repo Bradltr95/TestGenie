@@ -2,7 +2,9 @@ package com.testgenie;
 
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -88,6 +90,17 @@ public class TestGenerator {
             String methodName = method.getNameAsString();
             String testMethodName = "test" + capitalizeFirst(methodName);
             BlockStmt body = method.getBody().orElse(new BlockStmt());
+
+            boolean hasNullCheck = body.toString().contains("== null") ||
+                    body.findAll(MethodCallExpr.class).stream().anyMatch(m -> m.getNameAsString().equals("requireNonNull"));
+            boolean throwsException = method.getThrownExceptions().size() > 0 ||
+                    body.findAll(ThrowStmt.class).size() > 0;
+            boolean hasConditional = body.findAll(IfStmt.class).size() > 0 || body.findAll(SwitchStmt.class).size() > 0;
+            boolean usesOptional = body.findAll(MethodCallExpr.class).stream().anyMatch(m -> m.getScope().map(Object::toString).orElse("").contains("Optional"));
+            boolean returnsBoolean = method.getType().asString().equals("boolean") ||
+                    body.findAll(ReturnStmt.class).stream().anyMatch(r -> r.toString().contains("true") || r.toString().contains("false"));
+            boolean changesState = body.findAll(AssignExpr.class).stream()
+                    .anyMatch(a -> !a.getTarget().toString().contains("final"));
         }
 
         testContent.append("}");
