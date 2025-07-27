@@ -2,6 +2,9 @@ package com.testgenie;
 
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.AssignExpr;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -80,20 +83,78 @@ public class TestGenerator {
 
         // Generate test method stubs
         for (MethodDeclaration method : methods) {
-            if (method.isPublic()) {
-                String methodName = method.getNameAsString();
-                testContent.append(INDENT)
-                        .append("@Test\n")
-                        .append(INDENT)
-                        .append("void test").append(capitalizeFirst(methodName)).append("() {\n")
-                        .append(INDENT).append(INDENT)
-                        .append("// TODO: implement test for ").append(methodName).append("\n")
-                        .append(INDENT).append(INDENT)
-                        .append("// Example: when(mock.someMethod()).thenReturn(value);\n")
-                        .append(INDENT).append(INDENT)
-                        .append("// assertEquals(expected, ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...));\n")
-                        .append(INDENT)
-                        .append("}\n\n");
+            // Only generate test methods for public methods
+            if (!method.isPublic()) continue;
+
+            // Store the method name, test method name and method body
+            String methodName = method.getNameAsString();
+            String testMethodName = "test" + capitalizeFirst(methodName);
+            BlockStmt body = method.getBody().orElse(new BlockStmt());
+
+            boolean hasNullCheck = body.toString().contains("== null") ||
+                    body.findAll(MethodCallExpr.class).stream().anyMatch(m -> m.getNameAsString().equals("requireNonNull"));
+            boolean throwsException = method.getThrownExceptions().size() > 0 ||
+                    body.findAll(ThrowStmt.class).size() > 0;
+            boolean hasConditional = body.findAll(IfStmt.class).size() > 0 || body.findAll(SwitchStmt.class).size() > 0;
+            boolean usesOptional = body.findAll(MethodCallExpr.class).stream().anyMatch(m -> m.getScope().map(Object::toString).orElse("").contains("Optional"));
+            boolean returnsBoolean = method.getType().asString().equals("boolean") ||
+                    body.findAll(ReturnStmt.class).stream().anyMatch(r -> r.toString().contains("true") || r.toString().contains("false"));
+            boolean changesState = body.findAll(AssignExpr.class).stream()
+                    .anyMatch(a -> !a.getTarget().toString().contains("final"));
+
+            if (hasNullCheck) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_nullCheck() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify null handling\n")
+                        .append(INDENT).append(INDENT).append("assertThrows(NullPointerException.class, () -> {\n")
+                        .append(INDENT).append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(null);\n")
+                        .append(INDENT).append(INDENT).append("});\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (throwsException) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_throwsException() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify exception thrown\n")
+                        .append(INDENT).append(INDENT).append("assertThrows(Exception.class, () -> {\n")
+                        .append(INDENT).append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("});\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (hasConditional) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_conditionals() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify branching logic\n")
+                        .append(INDENT).append(INDENT).append("// Example: assertEquals(...)\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (usesOptional) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_returnsOptional() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: test Optional presence/absence\n")
+                        .append(INDENT).append(INDENT).append("Optional<?> result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("assertTrue(result.isPresent());\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (returnsBoolean) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_returnsBoolean() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: test true/false conditions\n")
+                        .append(INDENT).append(INDENT).append("boolean result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("assertTrue(result);\n")
+                        .append(INDENT).append("}\n\n");
+            }
+
+            if (changesState) {
+                testContent.append(INDENT).append("@Test\n")
+                        .append(INDENT).append("void ").append(testMethodName).append("_changesState() {\n")
+                        .append(INDENT).append(INDENT).append("// TODO: verify side effects or state changes\n")
+                        .append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
+                        .append(INDENT).append(INDENT).append("// assertEquals(expected, ...)\n")
+                        .append(INDENT).append("}\n\n");
             }
         }
 
