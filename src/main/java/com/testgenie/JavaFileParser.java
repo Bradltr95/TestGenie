@@ -7,7 +7,6 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * JavaFileParser is responsible for:
@@ -35,7 +34,7 @@ public class JavaFileParser {
             // Find all method declarations in the file and return them
             return compUnit.findAll(MethodDeclaration.class)
                     .stream()
-                    .collect(Collectors.toList());
+                    .toList();
 
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
@@ -57,7 +56,7 @@ public class JavaFileParser {
 
             return compUnit.findAll(FieldDeclaration.class)
                     .stream()
-                    .collect(Collectors.toList());
+                    .toList();
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
             System.err.println("Failed to parse file: " + e.getMessage());
