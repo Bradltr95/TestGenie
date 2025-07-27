@@ -1,6 +1,11 @@
 package com.testgenie;
 
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+
 import java.io.File;
+import java.util.List;
+import java.util.Optional;
 
 public class TestGenerator {
     private static final String INDENT = "    ";
@@ -22,6 +27,19 @@ public class TestGenerator {
                 .append("\n")
                 .append("import static org.mockito.Mockito.*;\n")
                 .append("import static org.junit.jupiter.api.Assertions.*;\n\n");
+
+        // Get the name of the Class we are writing test stubs for
+        Optional<String> classNameOpt = JavaFileParser.parseClassOrInterfaceName(sourceFile);
+
+        if (classNameOpt.isEmpty()) {
+            System.err.println("Could not determine class name for file: " + sourceFile.getName());
+            return;
+        }
+        // These variables hold the class name, methods, and fields we will create the stub tests for
+        String className = classNameOpt.get();
+        String testClassName = className + "Test";
+        List<MethodDeclaration> methods = JavaFileParser.parseMethods(sourceFile);
+        List<FieldDeclaration> fields = JavaFileParser.parseFields(sourceFile);
     }
 
     /**
