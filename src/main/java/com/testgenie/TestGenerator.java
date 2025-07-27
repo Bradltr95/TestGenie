@@ -57,6 +57,16 @@ public class TestGenerator {
                 .append("@InjectMocks\n")
                 .append(INDENT)
                 .append("private ").append(className).append(" ").append(lowercaseFirst(className)).append(";\n\n");
+
+        // Add setup method
+        testContent.append(INDENT)
+                .append("@BeforeEach\n")
+                .append(INDENT)
+                .append("void setUp() {\n")
+                .append(INDENT).append(INDENT)
+                .append("MockitoAnnotations.openMocks(this);\n")
+                .append(INDENT)
+                .append("}\n\n");
     }
 
     /**
