@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * TestGenerator is responsible for generating a unit test file for a given Java source file.
+ * It uses the JavaFileParser utility to extract class information and builds a test class
+ * with JUnit 5 annotations and Mockito-style mocking.
+ */
 public class TestGenerator {
     private static final String INDENT = "    ";
 
