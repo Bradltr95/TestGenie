@@ -51,6 +51,12 @@ public class TestGenerator {
                     .append(INDENT)
                     .append("private ").append(fieldType).append(" ").append(fieldName).append(";\n\n");
         }
+
+        // Add @InjectMocks for the class under test
+        testContent.append(INDENT)
+                .append("@InjectMocks\n")
+                .append(INDENT)
+                .append("private ").append(className).append(" ").append(lowercaseFirst(className)).append(";\n\n");
     }
 
     /**
