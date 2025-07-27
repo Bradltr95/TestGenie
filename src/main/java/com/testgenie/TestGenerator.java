@@ -67,6 +67,25 @@ public class TestGenerator {
                 .append("MockitoAnnotations.openMocks(this);\n")
                 .append(INDENT)
                 .append("}\n\n");
+
+        // Generate test method stubs
+        for (MethodDeclaration method : methods) {
+            if (method.isPublic()) {
+                String methodName = method.getNameAsString();
+                testContent.append(INDENT)
+                        .append("@Test\n")
+                        .append(INDENT)
+                        .append("void test").append(capitalizeFirst(methodName)).append("() {\n")
+                        .append(INDENT).append(INDENT)
+                        .append("// TODO: implement test for ").append(methodName).append("\n")
+                        .append(INDENT).append(INDENT)
+                        .append("// Example: when(mock.someMethod()).thenReturn(value);\n")
+                        .append(INDENT).append(INDENT)
+                        .append("// assertEquals(expected, ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...));\n")
+                        .append(INDENT)
+                        .append("}\n\n");
+            }
+        }
     }
 
     /**
