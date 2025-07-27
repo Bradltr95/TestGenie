@@ -2,6 +2,7 @@ package com.testgenie;
 
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.BlockStmt;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -80,21 +81,13 @@ public class TestGenerator {
 
         // Generate test method stubs
         for (MethodDeclaration method : methods) {
-            if (method.isPublic()) {
-                String methodName = method.getNameAsString();
-                testContent.append(INDENT)
-                        .append("@Test\n")
-                        .append(INDENT)
-                        .append("void test").append(capitalizeFirst(methodName)).append("() {\n")
-                        .append(INDENT).append(INDENT)
-                        .append("// TODO: implement test for ").append(methodName).append("\n")
-                        .append(INDENT).append(INDENT)
-                        .append("// Example: when(mock.someMethod()).thenReturn(value);\n")
-                        .append(INDENT).append(INDENT)
-                        .append("// assertEquals(expected, ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...));\n")
-                        .append(INDENT)
-                        .append("}\n\n");
-            }
+            // Only generate test methods for public methods
+            if (!method.isPublic()) continue;
+
+            // Store the method name, test method name and method body
+            String methodName = method.getNameAsString();
+            String testMethodName = "test" + capitalizeFirst(methodName);
+            BlockStmt body = method.getBody().orElse(new BlockStmt());
         }
 
         testContent.append("}");
