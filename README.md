@@ -1,8 +1,18 @@
 # TestGenie
-TestGenie is a simple command-line tool that automatically generates JUnit 5 test cases by scanning and analyzing Java source files. 
+TestGenie is a simple command-line tool that automatically generates JUnit 5 test **stubs** by scanning and analyzing Java source files. 
 It uses the JavaParser library to understand code structure. From there, my JavaFileParser and TestGenerator classes handle filtering the nodes and
-generating the testcases.
+generating the stub tests.
 
+## Why Use TestGenie / Purpose
+Writing test cases can often be skipped or overlooked during fast-paced development or code reviews.
+TestGenie solves this by analyzing Java classes and suggesting test case stubs, ensuring test coverage is considered early.
+
+### Key Benefits:
+
+- Reduces the barrier to writing tests by providing a clear starting point.
+- Encourages developers to add proper unit tests by generating helpful test scaffolding.
+- Keeps test ownership with the developer—you write the logic, TestGenie gives you the structure.
+- 
 ---
 
 ## What It Does
@@ -58,7 +68,7 @@ cd testgenie
 ### 2. Run the Project
 You can run the project on the samples in the samples folder by running the following command:
 ```bash
-./gradlew run --args="samples/Calculator.java"
+./gradlew run --args="--input samples/Calculator.java --output output"   
 ```
 You can replace the args value with other java files other than Calculator. 
 The test cases will get created under the **ouput** directory appended by Test. For example, the command above will generate the following filename in the output directory: **CalculatorTest.java**
