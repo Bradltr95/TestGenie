@@ -40,6 +40,17 @@ public class TestGenerator {
         String testClassName = className + "Test";
         List<MethodDeclaration> methods = JavaFileParser.parseMethods(sourceFile);
         List<FieldDeclaration> fields = JavaFileParser.parseFields(sourceFile);
+
+        // Generate mock fields
+        for (FieldDeclaration field : fields) {
+            if (field.isStatic()) continue;
+            String fieldType = field.getVariable(0).getTypeAsString();
+            String fieldName = field.getVariable(0).getNameAsString();
+            testContent.append(INDENT)
+                    .append("@Mock\n")
+                    .append(INDENT)
+                    .append("private ").append(fieldType).append(" ").append(fieldName).append(";\n\n");
+        }
     }
 
     /**
