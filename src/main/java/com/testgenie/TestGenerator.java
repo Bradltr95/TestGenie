@@ -3,7 +3,10 @@ package com.testgenie;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,6 +91,21 @@ public class TestGenerator {
         }
 
         testContent.append("}");
+
+        // Write the contents to the output file in the expected output directory
+        try {
+            File outDir = new File(outputDir);
+            if (!outDir.exists()) outDir.mkdirs();
+
+            File testFile = new File(outDir, testClassName + ".java");
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(testFile))) {
+                writer.write(testContent.toString());
+            }
+
+            System.out.println("Generated test file: " + testFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Error writing test file: " + e.getMessage());
+        }
     }
 
     /**
