@@ -86,6 +86,8 @@ public class TestGenerator {
                         .append("}\n\n");
             }
         }
+
+        testContent.append("}");
     }
 
     /**
