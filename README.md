@@ -12,8 +12,6 @@ TestGenie solves this by analyzing Java classes and suggesting test case stubs, 
 - Reduces the barrier to writing tests by providing a clear starting point.
 - Encourages developers to add proper unit tests by generating helpful test scaffolding.
 - Keeps test ownership with the developer—you write the logic, TestGenie gives you the structure.
-- 
----
 
 ## What It Does
 TestGenie parses Java files by breaking them into an abstract syntax tree (AST), allowing it to analyze:
@@ -68,9 +66,9 @@ cd testgenie
 ### 2. Run the Project
 You can run the project on the samples in the samples folder by running the following command:
 ```bash
-./gradlew run --args="--input samples/Calculator.java --output output"   
+./gradlew run --args="--input samples/BankAccount.java --output output"   
 ```
-You can replace the args value with other java files other than Calculator. 
+You can replace the args value with other java files other than BankAccount. 
 The test cases will get created under the **ouput** directory appended by Test. For example, the command above will generate the following filename in the output directory: **CalculatorTest.java**
 
 ### 3. Review the TestCase Output
