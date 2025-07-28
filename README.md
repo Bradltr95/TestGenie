@@ -13,47 +13,19 @@ TestGenie solves this by analyzing Java classes and suggesting test case stubs, 
 - Encourages developers to add proper unit tests by generating helpful test scaffolding.
 - Keeps test ownership with the developer—you write the logic, TestGenie gives you the structure.
 
-## What It Does
-TestGenie parses Java files by breaking them into an abstract syntax tree (AST), allowing it to analyze:
+## Requirements
+- Java: 22 or earlier (Java 17+ should work without issues)
+- Gradle: 7.0 or later
+  - You can use the included `./gradlew` wrapper. Hopefully there is no need to install Gradle globally.
 
-- Imports
-- Classes and constructors
-- Methods and arguments
-- Internal logic and conditions
+Make sure your JAVA_HOME is set correctly and that `./gradlew` is executable in your shell environment.
+It should work using the wrapper after in the project after the project is built.
 
-This structure makes it possible to evaluate each node and generate tests that match the behavior of the source code.
+I recommend using the default commands listed in the `How to Run` section, which make use of the Gradle wrapper.
 
-![Screenshot 2025-07-26 at 7.53.44 PM.png](src/main/resources/javaparser/images/Screenshot%202025-07-26%20at%207.53.44%E2%80%AFPM.png)
+Note: IntelliJ IDEA is likely the easiest IDE to run and debug the project with, but it’s not required.
 
-From here I am able to evaluate the different tree nodes to help write test cases for the individual Java files.
-
-The bulk of the actual project logic is within JavaFileParser and TestGenerator classes under src/main/java/com/testgenie. 
-
-## Entry Point
-Most of the logic lives in:
-
-- `src/main/java/com/testgenie/JavaFileParser.java`
-
-- `src/main/java/com/testgenie/TestGenerator.java`
-
-The CLI entry point is:
-
-- `src/main/java/com/testgenie/App.java`
-
-## Features
-
-- Parses any .java file placed in the /samples directory
-- Analyzes method bodies, arguments, conditionals, and exceptions
-- Generates clean, compilable JUnit 5 tests in the /output directory
-- Uses Picocli for CLI parsing—no runtime dependencies required
-  
-  | Null checks     | `if (arg == null)` or `Objects.requireNonNull`     |
-  |-----------------|----------------------------------------------------|
-  | Exceptions      | `throw new ...` or `assertThrows(...)`             |
-  | Conditionals    | `if`, `switch`                                     |
-  | Optional return | `Optional.of`, `Optional.empty()`                  |
-  | Boolean return  | `return true/false` or comparison                  |
-  | State change    | Non-`final` instance variables, e.g., `balance +=` |
+If you run into any build issues or have trouble running the repository, feel free to reach out.
 
 ## How to Run
 
@@ -68,14 +40,48 @@ You can run the project on the samples in the samples folder by running the foll
 ```bash
 ./gradlew run --args="--input samples/BankAccount.java --output output"   
 ```
-You can replace the args value with other java files other than BankAccount. 
-The test cases will get created under the **ouput** directory appended by Test. For example, the command above will generate the following filename in the output directory: **CalculatorTest.java**
+You can replace the args `--input samples/` value with other java files other than BankAccount.
+The test cases should get created under the `/output`directory so try not to change this. However, it
+should work by setting the `--output` argument anywhere in within a valid project location.
+
+If the output directory does not exist for whatever reason. Simply create `/output`.
 
 ### 3. Review the TestCase Output
 For convenience, you can run the **cat** terminal command on the test file like so:
 ```bash
 cat output/CalculatorTest.java
 ```
+
+Or open them in your editor from the `/output` directory.s
+
+## Features
+
+- Parses any .java file placed in the /samples directory
+- Analyzes method bodies, arguments, conditionals, and exceptions
+- Generates clean, compilable JUnit 5 tests in the /output directory
+- Uses Picocli for CLI parsing—no runtime dependencies required
+  
+Below is a list of all test scenarios that I generate if they exist in your Java source file:
+
+  | Null checks     | `if (arg == null)` or `Objects.requireNonNull`     |
+  |-----------------|----------------------------------------------------|
+  | Exceptions      | `throw new ...` or `assertThrows(...)`             |
+  | Conditionals    | `if`, `switch`                                     |
+  | Optional return | `Optional.of`, `Optional.empty()`                  |
+  | Boolean return  | `return true/false` or comparison                  |
+  | State change    | Non-`final` instance variables, e.g., `balance +=` |
+
+## Entry Point
+Most of the logic lives in:
+
+- `src/main/java/com/testgenie/JavaFileParser.java`
+
+- `src/main/java/com/testgenie/TestGenerator.java`
+
+The CLI entry point is:
+
+- `src/main/java/com/testgenie/App.java`
+
 ## Final Notes
 You can add your own Java files to the /samples directory and run the generator on them.
 Test output files are always named using the original class name with a Test suffix (e.g., Calculator → CalculatorTest.java).
