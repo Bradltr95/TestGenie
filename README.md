@@ -32,7 +32,7 @@ If you run into any build issues or have trouble running the repository, feel fr
 ### 1. Clone and Build
 Clone the project
 ```bash
-git clone https://github.com/yourname/testgenie.git
+git clone https://github.com/Bradltr95/TestGenie.git
 ```
 Next, open the project in your favorite editor or cd into the directory from your terminal.
 
