@@ -22,6 +22,7 @@ import static com.testgenie.utils.StringUtil.*;
  */
 public class TestGenerator {
     private static final String INDENT = "    ";
+    private static final String TEST_ANNOTATION = "@Test";
 
     /**
      * Entry point to generate the test file.
@@ -41,24 +42,26 @@ public class TestGenerator {
                 .append("import static org.mockito.Mockito.*;\n")
                 .append("import static org.junit.jupiter.api.Assertions.*;\n\n");
 
-        // Get the name of the Class we are writing test stubs for
+        // Parse class name from an input file
         Optional<String> classNameOpt = JavaFileParser.parseClassOrInterfaceName(sourceFile);
-
         if (classNameOpt.isEmpty()) {
             System.err.println("Could not determine class name for file: " + sourceFile.getName());
             return;
         }
-        // These variables hold the class name, methods, and fields we will create the stub tests for
+
+        // Get class name and supporting method/field metadata
         String className = classNameOpt.get();
         String testClassName = className + "Test";
         List<MethodDeclaration> methods = JavaFileParser.parseMethods(sourceFile);
         List<FieldDeclaration> fields = JavaFileParser.parseFields(sourceFile);
 
-        // Generate mock fields
+        // Generate private @Mock fields for the test methods
         for (FieldDeclaration field : fields) {
             if (field.isStatic()) continue;
+
             String fieldType = field.getVariable(0).getTypeAsString();
             String fieldName = field.getVariable(0).getNameAsString();
+
             testContent.append(INDENT)
                     .append("@Mock\n")
                     .append(INDENT)
@@ -71,7 +74,7 @@ public class TestGenerator {
                 .append(INDENT)
                 .append("private ").append(className).append(" ").append(lowercaseFirst(className)).append(";\n\n");
 
-        // Add setup method
+        // Add @BeforeEach method to initialize mocks
         testContent.append(INDENT)
                 .append("@BeforeEach\n")
                 .append(INDENT)
@@ -81,7 +84,7 @@ public class TestGenerator {
                 .append(INDENT)
                 .append("}\n\n");
 
-        // Generate test method stubs
+        // Iterate over public methods and generate condition-based test stubs
         for (MethodDeclaration method : methods) {
             // Only generate test methods for public methods
             if (!method.isPublic()) continue;
@@ -91,17 +94,25 @@ public class TestGenerator {
             String testMethodName = "test" + capitalizeFirst(methodName);
             BlockStmt body = method.getBody().orElse(new BlockStmt());
 
+            // Capture the conditional variables based on class information being parsed
             boolean hasNullCheck = body.toString().contains("== null") ||
                     body.findAll(MethodCallExpr.class).stream().anyMatch(m -> m.getNameAsString().equals("requireNonNull"));
-            boolean throwsException = method.getThrownExceptions().size() > 0 ||
-                    body.findAll(ThrowStmt.class).size() > 0;
-            boolean hasConditional = body.findAll(IfStmt.class).size() > 0 || body.findAll(SwitchStmt.class).size() > 0;
+
+            boolean throwsException = method.getThrownExceptions().isEmpty() ||
+                    body.findAll(ThrowStmt.class).isEmpty();
+
+            boolean hasConditional = body.findAll(IfStmt.class).isEmpty() || body.findAll(SwitchStmt.class).isEmpty();
+
             boolean usesOptional = body.findAll(MethodCallExpr.class).stream().anyMatch(m -> m.getScope().map(Object::toString).orElse("").contains("Optional"));
+
             boolean returnsBoolean = method.getType().asString().equals("boolean") ||
                     body.findAll(ReturnStmt.class).stream().anyMatch(r -> r.toString().contains("true") || r.toString().contains("false"));
+
             boolean changesState = body.findAll(AssignExpr.class).stream()
                     .anyMatch(a -> !a.getTarget().toString().contains("final"));
 
+            // Create the test stubs for any of the conditions above that are true
+            // Generate stub for null-check logic
             if (hasNullCheck) {
                 testContent.append(INDENT).append("@Test\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_nullCheck() {\n")
@@ -112,8 +123,9 @@ public class TestGenerator {
                         .append(INDENT).append("}\n\n");
             }
 
+            // Generate stub for exception-throwing methods
             if (throwsException) {
-                testContent.append(INDENT).append("@Test\n")
+                testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_throwsException() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify exception thrown\n")
                         .append(INDENT).append(INDENT).append("assertThrows(Exception.class, () -> {\n")
@@ -122,16 +134,18 @@ public class TestGenerator {
                         .append(INDENT).append("}\n\n");
             }
 
+            // Generate stub for conditional logic (if/switch)
             if (hasConditional) {
-                testContent.append(INDENT).append("@Test\n")
+                testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_conditionals() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify branching logic\n")
                         .append(INDENT).append(INDENT).append("// Example: assertEquals(...)\n")
                         .append(INDENT).append("}\n\n");
             }
 
+            // Generate stub for Optional-returning methods
             if (usesOptional) {
-                testContent.append(INDENT).append("@Test\n")
+                testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_returnsOptional() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test Optional presence/absence\n")
                         .append(INDENT).append(INDENT).append("Optional<?> result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
@@ -139,8 +153,9 @@ public class TestGenerator {
                         .append(INDENT).append("}\n\n");
             }
 
+            // Generate stub for boolean-returning methods
             if (returnsBoolean) {
-                testContent.append(INDENT).append("@Test\n")
+                testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_returnsBoolean() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test true/false conditions\n")
                         .append(INDENT).append(INDENT).append("boolean result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
@@ -148,8 +163,9 @@ public class TestGenerator {
                         .append(INDENT).append("}\n\n");
             }
 
+            // Generate stub for state-changing methods
             if (changesState) {
-                testContent.append(INDENT).append("@Test\n")
+                testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_changesState() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify side effects or state changes\n")
                         .append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
@@ -158,6 +174,7 @@ public class TestGenerator {
             }
         }
 
+        // Class the test class
         testContent.append("}");
 
         // Write the contents to the output file in the expected output directory

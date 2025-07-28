@@ -13,8 +13,9 @@ import java.util.Optional;
 /**
  * JavaFileParser is responsible for:
  * - Parsing Java source files using JavaParser.
- * - Extracting all method declarations from the source code.
- * - Returning them as a list of MethodDeclaration objects.
+ * @parseMethod Extracts all method declarations from the source code.
+ * @parseFields Extracting all method fields from the source code.
+ * @parseClassOrInterfaceName Extracts the class or interface name from the source code.
  *
  * This class uses StaticJavaParser for simplicity, which provides a static entry point
  * to parse files without explicitly creating a JavaParser configuration.
