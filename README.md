@@ -16,7 +16,7 @@ TestGenie solves this by analyzing Java classes and suggesting test case stubs, 
 ## Requirements
 - Java: 22 or earlier (Java 17+ should work without issues)
 - Gradle: 7.0 or later
-  - You can use the included `./gradlew` wrapper. Hopefully there is no need to install Gradle globally.
+  - Installing gradle: https://gradle.org/install/. Then you should be able to build and use the wrapper.
 
 Make sure your JAVA_HOME is set correctly and that `./gradlew` is executable in your shell environment.
 It should work using the wrapper after in the project after the project is built.
