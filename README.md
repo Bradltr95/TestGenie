@@ -30,21 +30,38 @@ If you run into any build issues or have trouble running the repository, feel fr
 ## How to Run
 
 ### 1. Clone and Build
+Clone the project
 ```bash
 git clone https://github.com/yourname/testgenie.git
-cd testgenie
-./gradlew build
 ```
+Next, open the project in your favorite editor or cd into the directory from your terminal.
+
+Build the project from the root directory. ex: /TestGenie
+```bash
+./gradlew clean build
+```
+
 ### 2. Run the Project
-You can run the project on the samples in the samples folder by running the following command:
+You can run the project on the Java source samples in the `/samples/..` folder by running the following command:
 ```bash
 ./gradlew run --args="--input samples/BankAccount.java --output output"   
 ```
-You can replace the args `--input samples/` value with other java files other than BankAccount.
-The test cases should get created under the `/output`directory so try not to change this. However, it
-should work by setting the `--output` argument anywhere in within a valid project location.
 
-If the output directory does not exist for whatever reason. Simply create `/output`.
+DONE! It's that easy! You can view the test classes in the `/output` directory.
+
+Note: You can replace the argument `--input samples/` value with other java files other than BankAccount.
+For your convenience:
+```bash
+./gradlew run --args="--input samples/BankAccount.java --output output"   
+```
+
+```bash
+./gradlew run --args="--input samples/Calculator.java --output output"   
+```
+
+```bash
+./gradlew run --args="--input samples/StringUtils.java --output output"   
+```
 
 ### 3. Review the TestCase Output
 For convenience, you can run the **cat** terminal command on the test file like so:
