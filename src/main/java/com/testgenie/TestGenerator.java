@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.testgenie.utils.StringUtil.*;
 
@@ -30,7 +31,7 @@ public class TestGenerator {
      * @param sourceFile The original Java file to generate test stubs for.
      * @param outputDir The output directory to write the test file to. This should be the output directory.
      */
-    public void generateTestFile(File sourceFile, String outputDir) {
+    public void generateTestFile(File sourceFile, String outputDir, Set<String> flags) {
         StringBuilder testContent = new StringBuilder();
         testContent.append("package com.testgenie.generated;\n\n")
                 .append("import org.junit.jupiter.api.BeforeEach;\n")
