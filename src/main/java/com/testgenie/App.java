@@ -6,6 +6,8 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @CommandLine.Command(
         name = "testgenie",
@@ -13,6 +15,8 @@ import java.util.concurrent.Callable;
         mixinStandardHelpOptions = true
 )
 public class App implements Callable<Integer> {
+    private static final Logger logger = Logger.getLogger(App.class.getName());
+
     @CommandLine.Option(names = {"-i", "--input"}, description = "Path to Java source file", required = true)
     private File inputFile;
 
@@ -44,7 +48,7 @@ public class App implements Callable<Integer> {
         final int SUCCESS = 0;
 
         if (!inputFile.exists() || !inputFile.isFile()) {
-            System.err.println("Invalid input file: " + inputFile);
+            logger.log(Level.SEVERE, "Invalid input file: {0}", inputFile);
             return ERROR;
         }
 
@@ -54,8 +58,7 @@ public class App implements Callable<Integer> {
             // This method will generate the test class and write the file to outputDir
             generator.generateTestFile(inputFile, outputDir, flags, ignore);
         } catch (Exception e) {
-            System.err.println("Failed to generate test file: " + e.getMessage());
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to generate test file: {0}", e.getMessage());
             return ERROR;
         }
 

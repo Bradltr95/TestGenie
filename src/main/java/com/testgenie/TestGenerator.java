@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static com.testgenie.utils.StringUtil.*;
 
@@ -24,6 +26,7 @@ import static com.testgenie.utils.StringUtil.*;
 public class TestGenerator {
     private static final String INDENT = "    ";
     private static final String TEST_ANNOTATION = "@Test";
+    private static final Logger logger = Logger.getLogger(TestGenerator.class.getName());
     /**
      * Entry point to generate the test file.
      *
@@ -45,7 +48,7 @@ public class TestGenerator {
         // Parse class name from an input file
         Optional<String> classNameOpt = JavaFileParser.parseClassOrInterfaceName(sourceFile);
         if (classNameOpt.isEmpty()) {
-            System.err.println("Could not determine class name for file: " + sourceFile.getName());
+            logger.log(Level.SEVERE, "Could not determine class name for file: {0}", sourceFile.getName());
             return;
         }
 
@@ -189,9 +192,9 @@ public class TestGenerator {
                 writer.write(testContent.toString());
             }
 
-            System.out.println("Generated test file: " + testFile.getAbsolutePath());
+            logger.log(Level.INFO, "Generated test file: {0}", testFile.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("Error writing test file: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error writing test file: {0}", e.getMessage());
         }
     }
 }
