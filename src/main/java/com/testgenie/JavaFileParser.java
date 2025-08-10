@@ -9,6 +9,8 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * JavaFileParser is responsible for:
@@ -21,6 +23,7 @@ import java.util.Optional;
  * to parse files without explicitly creating a JavaParser configuration.
  */
 public class JavaFileParser {
+    private static final Logger logger = Logger.getLogger(JavaFileParser.class.getName());
 
     /**
      * Parses a given Java file and extracts all method declarations.
@@ -41,7 +44,7 @@ public class JavaFileParser {
 
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
-            System.err.println("Failed to parse file for methods: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to parse file for methods: {0}", e.getMessage());
             return List.of();
         }
     }
@@ -62,7 +65,7 @@ public class JavaFileParser {
                     .toList();
         } catch(Exception e) {
             // If parsing fails, return an empty list instead of throwing and return an error message
-            System.err.println("Failed to parse file for class fields: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to parse file for class fields: {0}", e.getMessage());
             return List.of();
         }
     }
@@ -84,7 +87,7 @@ public class JavaFileParser {
                     .findFirst()
                     .map(ClassOrInterfaceDeclaration::getNameAsString);
         } catch(Exception e) {
-            System.err.println("Failed to parse file for ClassOrInterfanceName: " + e.getMessage());
+            logger.log(Level.SEVERE, "Failed to parse file for ClassOrInterfanceName: {0}", e.getMessage());
             return Optional.empty();
         }
     }
