@@ -18,7 +18,12 @@ public class App implements Callable<Integer> {
     @CommandLine.Option(names = {"-o", "--output"}, description = "Output directory for generated test class")
     private String outputDir = "output";
 
-    @CommandLine.Option(names = {"-f", "--flag"}, description = "Flags to filter which test stubs are generated")
+    @CommandLine.Option(
+            names = {"-f", "--flag"},
+            description = "Flags to filter which test stubs are generated",
+            split = ","
+    )
+
     private Set<String> flags;
 
     public static void main(String[] args) {
@@ -37,7 +42,7 @@ public class App implements Callable<Integer> {
 
         try {
             // This method will generate the test class and write the file to outputDir
-            generator.generateTestFile(inputFile, outputDir,flags);
+            generator.generateTestFile(inputFile, outputDir, flags);
         } catch (Exception e) {
             System.err.println("Failed to generate test file: " + e.getMessage());
             e.printStackTrace();

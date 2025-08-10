@@ -114,7 +114,7 @@ public class TestGenerator {
 
             // Create the test stubs for any of the conditions above that are true
             // Generate stub for null-check logic
-            if (hasNullCheck) {
+            if (hasNullCheck && flags.contains("null")) {
                 testContent.append(INDENT).append("@Test\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_nullCheck() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify null handling\n")
@@ -125,7 +125,7 @@ public class TestGenerator {
             }
 
             // Generate stub for exception-throwing methods
-            if (throwsException) {
+            if (throwsException && flags.contains("exceptions")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_throwsException() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify exception thrown\n")
@@ -136,7 +136,7 @@ public class TestGenerator {
             }
 
             // Generate stub for conditional logic (if/switch)
-            if (hasConditional) {
+            if (hasConditional && flags.contains("conditionals")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_conditionals() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify branching logic\n")
@@ -145,7 +145,7 @@ public class TestGenerator {
             }
 
             // Generate stub for Optional-returning methods
-            if (usesOptional) {
+            if (usesOptional && flags.contains("optionals")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_returnsOptional() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test Optional presence/absence\n")
@@ -155,7 +155,7 @@ public class TestGenerator {
             }
 
             // Generate stub for boolean-returning methods
-            if (returnsBoolean) {
+            if (returnsBoolean && flags.contains("booleans")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_returnsBoolean() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test true/false conditions\n")
@@ -165,7 +165,7 @@ public class TestGenerator {
             }
 
             // Generate stub for state-changing methods
-            if (changesState) {
+            if (changesState && flags.contains("state")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_changesState() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify side effects or state changes\n")
