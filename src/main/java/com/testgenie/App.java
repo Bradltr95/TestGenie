@@ -24,14 +24,14 @@ public class App implements Callable<Integer> {
             description = "Flags to filter which test stubs are generated",
             split = ","
     )
-    private final Set<String> FLAGS = new HashSet<>();
+    private final Set<String> flags = new HashSet<>();
 
     @CommandLine.Option(
             names = {"--ignore"},
             description = "Flags to ignore which test stubs are generated",
             split = ","
     )
-    private final Set<String> IGNORE = new HashSet<>();
+    private final Set<String> ignore = new HashSet<>();
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new App()).execute(args);
@@ -40,22 +40,25 @@ public class App implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        final int ERROR = 1;
+        final int SUCCESS = 0;
+
         if (!inputFile.exists() || !inputFile.isFile()) {
             System.err.println("Invalid input file: " + inputFile);
-            return 1;
+            return ERROR;
         }
 
         TestGenerator generator = new TestGenerator();
 
         try {
             // This method will generate the test class and write the file to outputDir
-            generator.generateTestFile(inputFile, outputDir, FLAGS, IGNORE);
+            generator.generateTestFile(inputFile, outputDir, flags, ignore);
         } catch (Exception e) {
             System.err.println("Failed to generate test file: " + e.getMessage());
             e.printStackTrace();
-            return 1;
+            return ERROR;
         }
 
-        return 0;
+        return SUCCESS;
     }
 }
