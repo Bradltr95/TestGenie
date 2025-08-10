@@ -26,7 +26,10 @@ import static com.testgenie.utils.StringUtil.*;
 public class TestGenerator {
     private static final String INDENT = "    ";
     private static final String TEST_ANNOTATION = "@Test";
+    private static final String METHOD_END = "}\n\n";
+    private static final String VOID = "void ";
     private static final Logger logger = Logger.getLogger(TestGenerator.class.getName());
+
     /**
      * Entry point to generate the test file.
      *
@@ -81,11 +84,11 @@ public class TestGenerator {
         testContent.append(INDENT)
                 .append("@BeforeEach\n")
                 .append(INDENT)
-                .append("void setUp() {\n")
+                .append(VOID + "setUp() {\n")
                 .append(INDENT).append(INDENT)
                 .append("MockitoAnnotations.openMocks(this);\n")
                 .append(INDENT)
-                .append("}\n\n");
+                .append(METHOD_END);
 
         GenerationOptions options = new GenerationOptions(flags, ignoreFlags);
 
@@ -120,62 +123,62 @@ public class TestGenerator {
             // Generate stub for null-check logic
             if (hasNullCheck && options.shouldGenerate("null")) {
                 testContent.append(INDENT).append("@Test\n")
-                        .append(INDENT).append("void ").append(testMethodName).append("_nullCheck() {\n")
+                        .append(INDENT).append(VOID).append(testMethodName).append("_nullCheck() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify null handling\n")
                         .append(INDENT).append(INDENT).append("assertThrows(NullPointerException.class, () -> {\n")
                         .append(INDENT).append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(null);\n")
                         .append(INDENT).append(INDENT).append("});\n")
-                        .append(INDENT).append("}\n\n");
+                        .append(INDENT).append(METHOD_END);
             }
 
             // Generate stub for exception-throwing methods
             if (throwsException && options.shouldGenerate("exceptions")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
-                        .append(INDENT).append("void ").append(testMethodName).append("_throwsException() {\n")
+                        .append(INDENT).append(VOID).append(testMethodName).append("_throwsException() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify exception thrown\n")
                         .append(INDENT).append(INDENT).append("assertThrows(Exception.class, () -> {\n")
                         .append(INDENT).append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
                         .append(INDENT).append(INDENT).append("});\n")
-                        .append(INDENT).append("}\n\n");
+                        .append(INDENT).append(METHOD_END);
             }
 
             // Generate stub for conditional logic (if/switch)
             if (hasConditional && options.shouldGenerate("conditionals")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
-                        .append(INDENT).append("void ").append(testMethodName).append("_conditionals() {\n")
+                        .append(INDENT).append(VOID).append(testMethodName).append("_conditionals() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify branching logic\n")
                         .append(INDENT).append(INDENT).append("// Example: assertEquals(...)\n")
-                        .append(INDENT).append("}\n\n");
+                        .append(INDENT).append(METHOD_END);
             }
 
             // Generate stub for Optional-returning methods
             if (usesOptional && options.shouldGenerate("options")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
-                        .append(INDENT).append("void ").append(testMethodName).append("_returnsOptional() {\n")
+                        .append(INDENT).append(VOID).append(testMethodName).append("_returnsOptional() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test Optional presence/absence\n")
                         .append(INDENT).append(INDENT).append("Optional<?> result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
                         .append(INDENT).append(INDENT).append("assertTrue(result.isPresent());\n")
-                        .append(INDENT).append("}\n\n");
+                        .append(INDENT).append(METHOD_END);
             }
 
             // Generate stub for boolean-returning methods
             if (returnsBoolean && options.shouldGenerate("booleans")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
-                        .append(INDENT).append("void ").append(testMethodName).append("_returnsBoolean() {\n")
+                        .append(INDENT).append(VOID).append(testMethodName).append("_returnsBoolean() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test true/false conditions\n")
                         .append(INDENT).append(INDENT).append("boolean result = ").append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
                         .append(INDENT).append(INDENT).append("assertTrue(result);\n")
-                        .append(INDENT).append("}\n\n");
+                        .append(INDENT).append(METHOD_END);
             }
 
             // Generate stub for state-changing methods
             if (changesState && options.shouldGenerate("state")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
-                        .append(INDENT).append("void ").append(testMethodName).append("_changesState() {\n")
+                        .append(INDENT).append(VOID).append(testMethodName).append("_changesState() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify side effects or state changes\n")
                         .append(INDENT).append(INDENT).append(lowercaseFirst(className)).append(".").append(methodName).append("(...);\n")
                         .append(INDENT).append(INDENT).append("// assertEquals(expected, ...)\n")
-                        .append(INDENT).append("}\n\n");
+                        .append(INDENT).append(METHOD_END);
             }
         }
 
