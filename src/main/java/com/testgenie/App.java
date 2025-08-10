@@ -3,6 +3,7 @@ package com.testgenie;
 import picocli.CommandLine;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
@@ -23,8 +24,14 @@ public class App implements Callable<Integer> {
             description = "Flags to filter which test stubs are generated",
             split = ","
     )
+    private final Set<String> FLAGS = new HashSet<>();
 
-    private Set<String> flags;
+    @CommandLine.Option(
+            names = {"--ignore"},
+            description = "Flags to ignore which test stubs are generated",
+            split = ","
+    )
+    private final Set<String> IGNORE = new HashSet<>();
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new App()).execute(args);
@@ -42,7 +49,7 @@ public class App implements Callable<Integer> {
 
         try {
             // This method will generate the test class and write the file to outputDir
-            generator.generateTestFile(inputFile, outputDir, flags);
+            generator.generateTestFile(inputFile, outputDir, FLAGS, IGNORE);
         } catch (Exception e) {
             System.err.println("Failed to generate test file: " + e.getMessage());
             e.printStackTrace();

@@ -24,14 +24,13 @@ import static com.testgenie.utils.StringUtil.*;
 public class TestGenerator {
     private static final String INDENT = "    ";
     private static final String TEST_ANNOTATION = "@Test";
-
     /**
      * Entry point to generate the test file.
      *
      * @param sourceFile The original Java file to generate test stubs for.
      * @param outputDir The output directory to write the test file to. This should be the output directory.
      */
-    public void generateTestFile(File sourceFile, String outputDir, Set<String> flags) {
+    public void generateTestFile(File sourceFile, String outputDir, Set<String> flags, Set<String> ignoreFlags) {
         StringBuilder testContent = new StringBuilder();
         testContent.append("package com.testgenie.generated;\n\n")
                 .append("import org.junit.jupiter.api.BeforeEach;\n")
@@ -85,6 +84,8 @@ public class TestGenerator {
                 .append(INDENT)
                 .append("}\n\n");
 
+        GenerationOptions options = new GenerationOptions(flags, ignoreFlags);
+
         // Iterate over public methods and generate condition-based test stubs
         for (MethodDeclaration method : methods) {
             // Only generate test methods for public methods
@@ -114,7 +115,7 @@ public class TestGenerator {
 
             // Create the test stubs for any of the conditions above that are true
             // Generate stub for null-check logic
-            if (hasNullCheck && flags.contains("null")) {
+            if (hasNullCheck && options.shouldGenerate("null")) {
                 testContent.append(INDENT).append("@Test\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_nullCheck() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify null handling\n")
@@ -125,7 +126,7 @@ public class TestGenerator {
             }
 
             // Generate stub for exception-throwing methods
-            if (throwsException && flags.contains("exceptions")) {
+            if (throwsException && options.shouldGenerate("exceptions")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_throwsException() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify exception thrown\n")
@@ -136,7 +137,7 @@ public class TestGenerator {
             }
 
             // Generate stub for conditional logic (if/switch)
-            if (hasConditional && flags.contains("conditionals")) {
+            if (hasConditional && options.shouldGenerate("conditionals")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_conditionals() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify branching logic\n")
@@ -145,7 +146,7 @@ public class TestGenerator {
             }
 
             // Generate stub for Optional-returning methods
-            if (usesOptional && flags.contains("optionals")) {
+            if (usesOptional && options.shouldGenerate("options")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_returnsOptional() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test Optional presence/absence\n")
@@ -155,7 +156,7 @@ public class TestGenerator {
             }
 
             // Generate stub for boolean-returning methods
-            if (returnsBoolean && flags.contains("booleans")) {
+            if (returnsBoolean && options.shouldGenerate("booleans")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_returnsBoolean() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: test true/false conditions\n")
@@ -165,7 +166,7 @@ public class TestGenerator {
             }
 
             // Generate stub for state-changing methods
-            if (changesState && flags.contains("state")) {
+            if (changesState && options.shouldGenerate("state")) {
                 testContent.append(INDENT).append(TEST_ANNOTATION + "\n")
                         .append(INDENT).append("void ").append(testMethodName).append("_changesState() {\n")
                         .append(INDENT).append(INDENT).append("// TODO: verify side effects or state changes\n")
