@@ -25,6 +25,10 @@ import java.util.logging.Logger;
 public class JavaFileParser {
     private static final Logger logger = Logger.getLogger(JavaFileParser.class.getName());
 
+    private JavaFileParser() {
+        throw new UnsupportedOperationException(JavaFileParser.class.getName() + " cannot be instantiated.");
+    }
+
     /**
      * Parses a given Java file and extracts all method declarations.
      *
