@@ -52,11 +52,12 @@ public class App implements Callable<Integer> {
             return ERROR;
         }
 
-        TestGenerator generator = new TestGenerator();
+        TestGenerator generator = new TestGenerator(inputFile, outputDir, flags, ignore);
 
         try {
             // This method will generate the test class and write the file to outputDir
-            generator.generateTestFile(inputFile, outputDir, flags, ignore);
+            generator.generateImports();
+            generator.generateTestFile();
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to generate test file: {0}", e.getMessage());
             return ERROR;
