@@ -20,9 +20,9 @@ import java.util.Set;
  */
 public class GenerationOptions {
     // Set of enabled flags for generation
-    private Set<String> flags;
+    private final Set<String> flags;
     // Set of flags to ignore (even if present in 'flags')
-    private Set<String> ignoreFlags;
+    private final Set<String> ignoreFlags;
 
     /**
      * @param flags        a set of flags that enable certain generation features

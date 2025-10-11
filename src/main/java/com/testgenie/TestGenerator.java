@@ -22,6 +22,8 @@ import static com.testgenie.utils.StringUtil.*;
  * TestGenerator is responsible for generating a unit test file for a given Java source file.
  * It uses the JavaFileParser utility to extract class information and builds a test class
  * with JUnit 5 annotations and Mockito-style mocking.
+ * @instanceVariable sourceFile The original Java file to generate test stubs for.
+ * @instanceVariable outputDir The output directory to write the test file to. This should be the output directory.
  */
 public class TestGenerator {
     private static final String INDENT = "    ";
@@ -29,15 +31,29 @@ public class TestGenerator {
     private static final String METHOD_END = "}\n\n";
     private static final String VOID = "void ";
     private static final Logger logger = Logger.getLogger(TestGenerator.class.getName());
+    private StringBuilder testContent;
+    private Optional<String> classNameOpt;
+    private String outputDir;
+    private Set<String> flags;
+    private Set<String> ignoreFlags;
+    private File sourceFile;
 
-    /**
-     * Entry point to generate the test file.
-     *
-     * @param sourceFile The original Java file to generate test stubs for.
-     * @param outputDir The output directory to write the test file to. This should be the output directory.
-     */
-    public void generateTestFile(File sourceFile, String outputDir, Set<String> flags, Set<String> ignoreFlags) {
-        StringBuilder testContent = new StringBuilder();
+    public TestGenerator(File sourceFile, String outputDir, Set<String> flags, Set<String> ignoreFlags) {
+        // Create stringbuilder object
+        testContent = new StringBuilder();
+        // Parse class name from an input file
+        this.classNameOpt = JavaFileParser.parseClassOrInterfaceName(sourceFile);
+        if (classNameOpt.isEmpty()) {
+            logger.log(Level.SEVERE, "Could not determine class name for file: {0}", sourceFile.getName());
+            return;
+        }
+        this.outputDir = outputDir;
+        this.flags = flags;
+        this.ignoreFlags = ignoreFlags;
+        this.sourceFile = sourceFile;
+    }
+
+    public void generateImports() {
         testContent.append("package com.testgenie.generated;\n\n")
                 .append("import org.junit.jupiter.api.BeforeEach;\n")
                 .append("import org.junit.jupiter.api.Test;\n")
@@ -47,13 +63,12 @@ public class TestGenerator {
                 .append("\n")
                 .append("import static org.mockito.Mockito.*;\n")
                 .append("import static org.junit.jupiter.api.Assertions.*;\n\n");
+    }
 
-        // Parse class name from an input file
-        Optional<String> classNameOpt = JavaFileParser.parseClassOrInterfaceName(sourceFile);
-        if (classNameOpt.isEmpty()) {
-            logger.log(Level.SEVERE, "Could not determine class name for file: {0}", sourceFile.getName());
-            return;
-        }
+    /**
+     * Entry point to generate the test file.
+     */
+    public void generateTestFile() {
 
         // Get class name and supporting method/field metadata
         String className = classNameOpt.get();
